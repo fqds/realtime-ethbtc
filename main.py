@@ -24,7 +24,8 @@ def parseCourse(driver):
     return float(value.text[:-4])
 
 
-def addStatNote(cursor, unix, eth_value, btc_value):
+# Сохраняет в БД курсы eth и btc
+def createStatNote(cursor, unix, eth_value, btc_value):
     cursor.execute("INSERT INTO stat (unix, eth_value, btc_value) VALUES (%s, %s, %s)",
                    (unix, eth_value, btc_value))
 
@@ -36,6 +37,7 @@ def getStatNoteByUnix(cursor, unix):
     return note
 
 
+# Возвращает unix время, в которое произойдет следующее добавление результатов в БД
 def getNextUnix():
     return int(time.time())//60*60+60
 
@@ -76,7 +78,7 @@ def main():
                 print("current time:", datetime.fromtimestamp(next_unix))
                 print("eth:", eth_value, "\nbtc:", btc_value)
 
-                addStatNote(cursor, next_unix, eth_value, btc_value)
+                createStatNote(cursor, next_unix, eth_value, btc_value)
                 connection.commit()
 
                 note = getStatNoteByUnix(cursor, next_unix-60*OFFSET_MINUTES)
