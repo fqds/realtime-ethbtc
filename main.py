@@ -11,7 +11,7 @@ BTC_URL = "https://ru.tradingview.com/symbols/BTCUSD/?exchange=CRYPTO"
 DB_NAME = "ethbtc"
 DB_USER = "tester"
 DB_PASSWORD = "password"
-DB_HOST = "host.docker.internal" # По этому хосту докер контейнер конектится к БД на компе, можно поставить "localhost" и запустить на F5
+DB_HOST = "localhost" # "host.docker.internal" - по этому хосту докер контейнер приконектится к БД на компе
 DB_PORT = "5432"
 ALARM_DEVIATION = 0.005  # Процент отклонений роста eth от btc необходимый для вызова ahtung()
 OFFSET_MINUTES = 60  # Период проверки отклонений
@@ -63,19 +63,20 @@ def main():
     print("DB connected")
     
     options = webdriver.ChromeOptions()
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-gpu')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--headless')
     options.add_argument('--start-maximized')
 
-    # driver_eth = webdriver.Remote("http://127.0.0.1:4444/wd/hub", DesiredCapabilities.CHROME, options=options) # Для запуска через докер
     driver_eth = webdriver.Chrome(options=options) # Для запуска на локалке
     driver_eth.get(url=ETH_URL)
 
-    # driver_btc = webdriver.Remote("http://127.0.0.1:4444/wd/hub", DesiredCapabilities.CHROME, options=options) # Для запуска через докер
     driver_btc = webdriver.Chrome(options=options) # Для запуска на локалке
     driver_btc.get(url=BTC_URL)
+    
+    print("Webdrivers connected \nWaiting for update . . .")
 
     while True:
         try:
@@ -83,7 +84,7 @@ def main():
             if current_time >= next_unix:
                 eth_value = parseCourse(driver_eth)
                 btc_value = parseCourse(driver_btc)
-                print("current time:", datetime.fromtimestamp(next_unix))
+                print("CURRENT DATETIME:", datetime.fromtimestamp(next_unix))
                 print("eth:", eth_value, "\nbtc:", btc_value)
 
                 createStatNote(cursor, next_unix, eth_value, btc_value)
