@@ -11,7 +11,7 @@ BTC_URL = "https://ru.tradingview.com/symbols/BTCUSD/?exchange=CRYPTO"
 DB_NAME = "ethbtc"
 DB_USER = "tester"
 DB_PASSWORD = "password"
-DB_HOST = "localhost"
+DB_HOST = "host.docker.internal" # По этому хосту докер контейнер конектится к БД на компе, можно поставить "localhost" и запустить на F5
 DB_PORT = "5432"
 ALARM_DEVIATION = 0.005  # Процент отклонений роста eth от btc необходимый для вызова ahtung()
 OFFSET_MINUTES = 60  # Период проверки отклонений
@@ -60,13 +60,21 @@ def main():
 
     cursor = connection.cursor()
     next_unix = getNextUnix()
-
+    print("DB connected")
+    
     options = webdriver.ChromeOptions()
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--headless')
+    options.add_argument('--start-maximized')
 
-    driver_eth = webdriver.Chrome(executable_path="driver_path", options=options)
+    # driver_eth = webdriver.Remote("http://127.0.0.1:4444/wd/hub", DesiredCapabilities.CHROME, options=options) # Для запуска через докер
+    driver_eth = webdriver.Chrome(options=options) # Для запуска на локалке
     driver_eth.get(url=ETH_URL)
-    driver_btc = webdriver.Chrome(executable_path="driver_path", options=options)
+
+    # driver_btc = webdriver.Remote("http://127.0.0.1:4444/wd/hub", DesiredCapabilities.CHROME, options=options) # Для запуска через докер
+    driver_btc = webdriver.Chrome(options=options) # Для запуска на локалке
     driver_btc.get(url=BTC_URL)
 
     while True:
