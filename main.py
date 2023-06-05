@@ -70,10 +70,10 @@ def main():
     options.add_argument('--headless')
     options.add_argument('--start-maximized')
 
-    driver_eth = webdriver.Chrome(options=options) # Для запуска на локалке
+    driver_eth = webdriver.Chrome(options=options)
     driver_eth.get(url=ETH_URL)
 
-    driver_btc = webdriver.Chrome(options=options) # Для запуска на локалке
+    driver_btc = webdriver.Chrome(options=options)
     driver_btc.get(url=BTC_URL)
     
     print("Webdrivers connected \nWaiting for update . . .")
