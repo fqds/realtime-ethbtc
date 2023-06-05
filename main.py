@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from selenium.webdriver.chrome.options import Options
+from datetime import datetime
 
 
 ETH_URL = "https://ru.tradingview.com/symbols/ETHUSD/?exchange=CRYPTO"
@@ -14,7 +14,7 @@ DB_PASSWORD = "password"
 DB_HOST = "localhost"
 DB_PORT = "5432"
 ALARM_DEVIATION = 0.005  # Процент отклонений роста eth от btc необходимый для вызова ahtung()
-OFFSET_MINUTES = 50  # Период проверки отклонений
+OFFSET_MINUTES = 60  # Период проверки отклонений
 
 
 def parseCourse(driver):
@@ -73,6 +73,7 @@ def main():
             if current_time >= next_unix:
                 eth_value = parseCourse(driver_eth)
                 btc_value = parseCourse(driver_btc)
+                print("current time:", datetime.fromtimestamp(next_unix))
                 print("eth:", eth_value, "\nbtc:", btc_value)
 
                 addStatNote(cursor, next_unix, eth_value, btc_value)
